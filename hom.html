@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تنبؤ سعر السيارة</title>
+    <style>
+        body {
+            background: linear-gradient(45deg, #000000, #504907);
+            color: #FFD700;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        h1 { font-size: 2.5em; font-weight: bold; text-transform: uppercase; margin-bottom: 20px; }
+        form {
+            background-color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 25px rgba(174, 158, 8, 0.5);
+            width: 100%;
+            max-width: 600px;
+        }
+        label, input, select, button { width: 100%; font-size: 1.2em; margin-top: 10px; }
+        input, select {
+            padding: 10px;
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            background-color: #555;
+            color: #FFD700;
+        }
+        button {
+            padding: 15px;
+            background-color: #FFD700;
+            color: black;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        button:hover { background-color: #FF6347; transform: scale(1.1); }
+        #result { margin-top: 20px; font-size: 1.5em; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>تنبؤ سعر السيارة</h1>
+        <form id="carForm">
+            <label for="make">نوع العلامة التجارية</label>
+            <input type="text" id="make" required>
+
+            <label for="model">نوع السيارة</label>
+            <input type="text" id="model" required>
+
+            <label for="mileage">عدد الكيلومترات</label>
+            <input type="number" id="mileage" required>
+
+            <label for="engine_size">حجم المحرك</label>
+            <input type="number" id="engine_size" required>
+
+            <label for="fuelType">نوع المحرك</label>
+            <select id="fuelType" required>
+                <option value="">اختر نوع المحرك</option>
+                <option value="petrol">بترول</option>
+                <option value="diesel">ديزل</option>
+                <option value="gas">غاز</option>
+            </select>
+
+            <label for="isImported">الجمارك</label>
+            <select id="isImported" required>
+                <option value="">اختر نوع الجمارك</option>
+                <option value="yes">مجمرك</option>
+                <option value="no">غير مجمرك</option>
+            </select>
+
+            <button type="submit">تنبؤ السعر</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('carForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = {
+                make: document.getElementById('make').value,
+                model: document.getElementById('model').value,
+                mileage: parseFloat(document.getElementById('mileage').value),
+                engine_size: parseFloat(document.getElementById('engine_size').value),
+                fuelType: document.getElementById('fuelType').value,
+                isImported: document.getElementById('isImported').value
+            };
+
+            fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => document.getElementById('result').innerText = `تنبؤ السعر: $${data.price}`)
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
